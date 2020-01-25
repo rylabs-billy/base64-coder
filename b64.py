@@ -1,37 +1,45 @@
 #!/usr/bin/env python3
 #
 # base64 encode or decode a string 
+#
+# take input from command line
+# print usage if syntax is invalid
 
 import sys
 import base64
 
-usage = ("""
-Usage: b64.py <string> -(e|d)
+def encode(s):
+    """encodes a string"""
+    encoded_bytes = base64.urlsafe_b64encode(s.encode('utf-8'))
+    encoded_string = str(encoded_bytes, 'utf-8')
+    print(f'\n{encoded_string}')
 
-Example: b64.py 'This text' -e  # encode
-         b64.py '0cmluZy4=' -d  # decode
-        """)
+def decode(s):
+    """decodes a binary string"""
+    decoded_bytes = base64.urlsafe_b64decode(s)
+    decoded_string = str(decoded_bytes, 'utf-8')
+    print(f'\n{decoded_string}')
 
-# accepted arguments
-arg_list = ['-e','-d']
+def main():
+    usage = ("""
+            Usage: b64.py -(e|d) <string>
 
-# take input from command line
-# print usage if user f'd up 
-if len(sys.argv) == 3 and sys.argv[1] in arg_list:
-    arg = sys.argv[1]
-    string = sys.argv[2]
-    try:
-        # encode string
-        if arg == arg_list[0]:
-            encoded_bytes = base64.urlsafe_b64encode(string.encode('utf-8'))
-            encoded_string = str(encoded_bytes, 'utf-8')
-            print(f'\n{encoded_string}')
-        # decode string
-        elif arg == arg_list[1]:
-            decoded_bytes = base64.urlsafe_b64decode(string)
-            decoded_string = str(decoded_bytes, 'utf-8')
-            print(f'\n{decoded_string}')
-    except (base64.binascii.Error, UnicodeDecodeError):
-        print('\nNothing to decode here dummy.')
-else:
-    print(usage)
+            Example: b64.py -e 'This text' # encode
+                     b64.py -d '0cmluZy4=' # decode
+            """)
+
+    if len(sys.argv) == 3 and sys.argv[1] in ('-e', '-d'):
+        option = sys.argv[1]
+        string = sys.argv[2]
+        try:
+            if option == '-e':
+                encode(string)
+            elif option == '-d':
+                decode(string)
+        except (base64.binascii.Error, UnicodeDecodeError):
+            print('\nUse -e to encode the string.')
+    else:
+        print(usage)
+# main
+main()
+
